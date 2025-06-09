@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stutter-ify</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+        }
+        input, button {
+            width: 80%;
+            padding: 10px;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        p {
+            font-size: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Stutter-ify</h1>
+    <input type="text" id="userInput" placeholder="Type a sentence..." oninput="transformText()">
+    <p id="outputText"></p>
+    <button onclick="copyToClipboard()">Copy to Clipboard</button>
+
+    <script>
+        function transformText() {
+            let input = document.getElementById("userInput").value;
+            let words = input.split(/\s+/);
+
+            let transformedWords = words.map(word => {
+                if (word.length > 0 && Math.random() < 0.25) { // Increased chance to 25%
+                    word = word.charAt(0) + '-' + word.charAt(0) + word.slice(1);
+                }
+                return word.replace(/[lr]/g, "w");
+            });
+
+            document.getElementById("outputText").textContent = transformedWords.join(" ");
+        }
+
+        function copyToClipboard() {
+            let outputText = document.getElementById("outputText").textContent;
+            navigator.clipboard.writeText(outputText).then(() => {
+                alert("Copied to clipboard!");
+            });
+        }
+    </script>
+
+</body>
+</html>
