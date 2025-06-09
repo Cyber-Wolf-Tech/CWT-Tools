@@ -5,3 +5,5 @@ So far the current tools include:
 
 * A text reversal tool.
      * Includes instant preview and the option to copy the output to clipboard.
+* A stutter-ify tool.
+     * Changes "l" and "r" to "w" and adds a stutter with about 25% chance.
