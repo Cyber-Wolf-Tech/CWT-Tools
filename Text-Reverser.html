@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reverse Text</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        input, button {
+            margin-top: 10px;
+            padding: 8px;
+            font-size: 16px;
+        }
+        #output {
+            margin-top: 10px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h2>Reverse Your Text</h2>
+    <input type="text" id="userInput" placeholder="Type something..." oninput="reverseText()">
+    <div id="output"></div>
+    <button onclick="copyToClipboard()">Copy to Clipboard</button>
+
+    <script>
+        function reverseText() {
+            let input = document.getElementById("userInput").value;
+            let reversed = input.split("").reverse().join("");
+            document.getElementById("output").textContent = reversed;
+        }
+
+        function copyToClipboard() {
+            let text = document.getElementById("output").textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                alert("Copied to clipboard!");
+            }).catch(err => {
+                console.error("Error copying text: ", err);
+            });
+        }
+    </script>
+</body>
+</html>
