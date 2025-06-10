@@ -14,7 +14,7 @@ Fixing something like this if your code/documentation/etc. change/fix is around 
 ### Clearly document and label your changes.
 This not only helps me as the reviewer to merge your change sooner, but also helps me keep track of what changed, where, and why. It also looks a lot cleaner.
 
-### Make an issue with the "enhancement" label before working on a very big change.
+### Make an issue with the __*"Feature Proposal"*__ template before working on a very big change.
 This will help talk out your idea, and if I think it fits the scope of this project. That way you wont waste your time on something I might not accept.
 
 
