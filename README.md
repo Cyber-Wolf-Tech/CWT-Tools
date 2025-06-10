@@ -9,5 +9,7 @@ So far the current tools include:
      * Changes "l" and "r" to "w" and adds a stutter with about 25% chance.
 * A zalgo (void text) tool.
      * Transforms the input text to zalgo (void) text.
+* A random name tool.
+     * Picks from a set list of names randomly.
 * A ball physics game.
      * Right Click to add an object. Click on an object to drag it. Enable multi place mode to place 4 objects at once with left click.
