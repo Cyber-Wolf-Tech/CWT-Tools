@@ -7,3 +7,5 @@ So far the current tools include:
      * Includes instant preview and the option to copy the output to clipboard.
 * A stutter-ify tool.
      * Changes "l" and "r" to "w" and adds a stutter with about 25% chance.
+* A zalgo (void text) tool.
+     * Transforms the input text to zalgo (void) text.
