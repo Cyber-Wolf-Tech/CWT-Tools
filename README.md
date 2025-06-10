@@ -9,3 +9,5 @@ So far the current tools include:
      * Changes "l" and "r" to "w" and adds a stutter with about 25% chance.
 * A zalgo (void text) tool.
      * Transforms the input text to zalgo (void) text.
+* A ball physics game.
+     * Click to add a random colored ball. Click on a ball to drag it.
