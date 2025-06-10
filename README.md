@@ -10,4 +10,4 @@ So far the current tools include:
 * A zalgo (void text) tool.
      * Transforms the input text to zalgo (void) text.
 * A ball physics game.
-     * Click to add a random colored ball. Click on a ball to drag it.
+     * Right Click to add an object. Click on an object to drag it. Enable multi place mode to place 4 objects at once with left click.
