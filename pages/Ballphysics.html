@@ -3,21 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ball Physics Game</title>
+    <title>Water Physics Game with Objects</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.17.1/matter.min.js"></script>
     <style>
-        body { margin: 0; overflow: hidden; }
+        body { margin: 0; overflow: hidden; font-family: Arial, sans-serif; }
         canvas { display: block; }
+        #controls { position: absolute; top: 10px; left: 10px; background: white; padding: 10px; border-radius: 5px; }
     </style>
 </head>
 <body>
+    <div id="controls">
+        <label for="objectType">Choose an object:</label>
+        <select id="objectType">
+            <option value="droplet">Water Droplet</option>
+            <option value="rock">Rock</option>
+            <option value="wood">Wood</option>
+            <option value="metal">Metal</option>
+        </select>
+        <label>
+            <input type="checkbox" id="multiPlace"> Multi Place Mode (leftclick)
+        </label>
+    </div>
     <script>
-        // Create engine and world
         const { Engine, Render, Runner, Bodies, Composite, Mouse, MouseConstraint } = Matter;
         const engine = Engine.create();
         const world = engine.world;
 
-        // Create renderer
         const render = Render.create({
             element: document.body,
             engine: engine,
@@ -28,22 +39,48 @@
         const runner = Runner.create();
         Runner.run(runner, engine);
 
-        // Create boundaries
         const ground = Bodies.rectangle(window.innerWidth / 2, window.innerHeight, window.innerWidth, 50, { isStatic: true });
         const leftWall = Bodies.rectangle(0, window.innerHeight / 2, 50, window.innerHeight, { isStatic: true });
         const rightWall = Bodies.rectangle(window.innerWidth, window.innerHeight / 2, 50, window.innerHeight, { isStatic: true });
         Composite.add(world, [ground, leftWall, rightWall]);
 
-        // Add mouse interaction
         const mouse = Mouse.create(render.canvas);
         const mouseConstraint = MouseConstraint.create(engine, { mouse: mouse });
         Composite.add(world, mouseConstraint);
 
-        // Click to create water droplets
+        const objectProperties = {
+            droplet: { radius: 10, density: 0.02, color: 'blue' },
+            rock: { radius: 20, density: 2.5, color: 'gray' },
+            wood: { radius: 30, density: 0.5, color: 'brown' },
+            metal: { radius: 25, density: 7.8, color: 'silver' }
+        };
+
         render.canvas.addEventListener("click", (event) => {
-            const droplet = Bodies.circle(event.clientX, event.clientY, 10, { restitution: 0.5, density: 0.02 });
-            Composite.add(world, droplet);
+            if (!document.getElementById("multiPlace").checked) return;
+            createObject(event.clientX, event.clientY);
+            createObject(event.clientX, event.clientY);
+            createObject(event.clientX, event.clientY);
+            createObject(event.clientX, event.clientY);
         });
+
+        render.canvas.addEventListener("contextmenu", (event) => {
+            event.preventDefault();
+            createObject(event.clientX, event.clientY);
+        });
+
+        function createObject(x, y) {
+            const selectedType = document.getElementById("objectType").value;
+            const properties = objectProperties[selectedType];
+
+            const object = Bodies.circle(x, y, properties.radius, { 
+                restitution: 0.5, density: properties.density, render: { fillStyle: properties.color }
+            });
+
+            Composite.add(world, object);
+        }
+    </script>
+</body>
+</html>
 
     </script>
 </body>
