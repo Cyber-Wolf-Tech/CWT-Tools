@@ -13,3 +13,6 @@ So far the current tools include:
      * Picks from a set list of names randomly.
 * A ball physics game.
      * Right Click to add an object. Click on an object to drag it. Enable multi place mode to place 4 objects at once with left click.
+* A morse code tool.
+     * Ctrl + Enter automatically encodes your input without using the button.
+     * Ctrl + Shift + Enter automatically decodes your input without using the button.

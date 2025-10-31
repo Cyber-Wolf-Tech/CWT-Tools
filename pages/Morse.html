@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Morse Code Encoder / Decoder</title>
+<style>
+  :root{--bg:#0f1720;--card:#0b1220;--muted:#9aa4b2;--accent:#4fd1c5;--text:#e6eef6}
+  body{font-family:Inter,Segoe UI,Roboto,system-ui,Arial,sans-serif;margin:0;padding:32px;background:linear-gradient(180deg,#071025 0%, #081226 100%);color:var(--text)}
+  .wrap{max-width:900px;margin:0 auto;background:linear-gradient(180deg,var(--card),#07151f);border-radius:12px;padding:22px;box-shadow:0 8px 30px rgba(2,6,23,0.6)}
+  h1{margin:0 0 8px;font-weight:600;font-size:20px}
+  p.lead{color:var(--muted);margin:0 0 18px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  label{display:block;font-size:13px;margin-bottom:6px;color:var(--muted)}
+  textarea{width:100%;min-height:140px;padding:12px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:rgba(255,255,255,0.02);color:var(--text);resize:vertical;font-size:14px}
+  .controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+  button{background:var(--accent);border:0;color:#022;padding:10px 12px;border-radius:8px;cursor:pointer;font-weight:600}
+  button.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted);font-weight:600}
+  .output{margin-top:16px;padding:12px;border-radius:8px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03);min-height:72px}
+  .small{font-size:13px;color:var(--muted)}
+  footer{margin-top:18px;color:var(--muted);font-size:13px;text-align:right}
+  @media(max-width:760px){.grid{grid-template-columns:1fr}}
+  .kbd{display:inline-block;padding:4px 8px;border-radius:6px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.02);font-family:monospace;font-size:13px}
+  .error{color:#ff9b9b;margin-top:8px}
+</style>
+</head>
+<body>
+  <div class="wrap" role="main" aria-labelledby="title">
+    <h1 id="title">Morse Code Encoder / Decoder</h1>
+    <p class="lead">Type text to encode into Morse, or paste Morse (dots and dashes) to decode back. Supported punctuation is included. Use space to separate letters and <span class="kbd">/</span> or multiple spaces to separate words when decoding.</p>
+    <p class="lead">Please note that this program may not function as intended. You agree to not hold the creator liable for any damages or inconveniences caused. This program is not intended for professional use.</p>
+
+    <div class="grid">
+      <div>
+        <label for="inputText">Input</label>
+        <textarea id="inputText" placeholder="Type plain text to encode, or paste Morse to decode (use . and -)"></textarea>
+
+        <div class="controls" style="margin-top:12px">
+          <button id="encodeBtn">Encode to Morse</button>
+          <button id="decodeBtn" class="ghost">Decode from Morse</button>
+          <button id="clearBtn" class="ghost">Clear</button>
+          <button id="copyOut" class="ghost" title="Copy output">Copy Output</button>
+        </div>
+
+        <div id="err" class="error" aria-live="polite" style="display:none"></div>
+      </div>
+
+      <div>
+        <label for="output">Output</label>
+        <div id="output" class="output" aria-live="polite"></div>
+
+        <div style="margin-top:12px" class="small">
+          Rules and notes:
+          <ul style="margin:8px 0 0 18px;padding:0;color:var(--muted)">
+            <li>Encode: letters separated by a single space, words separated with <span class="kbd">/</span>.</li>
+            <li>Decode: accepts <span class="kbd">.</span> for dot and <span class="kbd">-</span> for dash; letters separated by spaces or pipes; words separated by <span class="kbd">/</span> or multiple spaces.</li>
+            <li>Supported punctuation: . , ? ' ! / ( ) & : ; = + - _ " @</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <footer>Made with care • CWTech • Morse table follows ITU common assignments</footer>
+  </div>
+
+<script>
+(function(){
+  const CHAR_TO_MORSE = {
+    "A": ".-","B":"-...","C":"-.-.","D":"-..","E":".","F":"..-.","G":"--.","H":"....",
+    "I":"..","J":".---","K":"-.-","L":".-..","M":"--","N":"-.","O":"---","P":".--.",
+    "Q":"--.-","R":".-.","S":"...","T":"-","U":"..-","V":"...-","W":".--","X":"-..-",
+    "Y":"-.--","Z":"--..",
+    "0":"-----","1":".----","2":"..---","3":"...--","4":"....-","5":".....",
+    "6":"-....","7":"--...","8":"---..","9":"----.",
+    ".":".-.-.-",",":"--..--","?":"..--..","'":".----.","!":"-.-.--","/":"-..-.",
+    "(":"-.--.",")":"-.--.-","&":".-... ",":":"---...",";":"-.-.-.","=":"-...-",
+    "+":".-.-.","-":"-....-","_":"..--.-",'"':'.-..-.',"@":".--.-."
+  };
+
+  CHAR_TO_MORSE["&"] = ".-...";
+
+  const MORSE_TO_CHAR = {};
+  for (const k in CHAR_TO_MORSE) MORSE_TO_CHAR[CHAR_TO_MORSE[k]] = k;
+
+  const input = document.getElementById('inputText');
+  const output = document.getElementById('output');
+  const err = document.getElementById('err');
+  const encodeBtn = document.getElementById('encodeBtn');
+  const decodeBtn = document.getElementById('decodeBtn');
+  const clearBtn = document.getElementById('clearBtn');
+  const copyOut = document.getElementById('copyOut');
+
+  function showError(msg){
+    err.style.display = 'block';
+    err.textContent = msg;
+    setTimeout(()=>{ err.style.display='none'; }, 4500);
+  }
+
+  function encode(text){
+    text = String(text || '').toUpperCase().replace(/\r\n?/g,' ').replace(/\s+/g,' ').trim();
+    if (!text) return '';
+    const words = text.split(' ');
+    const encodedWords = words.map(word=>{
+      return word.split('').map(ch=>{
+        if (CHAR_TO_MORSE[ch]) return CHAR_TO_MORSE[ch];
+        return '?';
+      }).join(' ');
+    });
+    return encodedWords.join(' / ');
+  }
+
+  function decode(morse){
+    morse = String(morse || '').trim();
+    if (!morse) return '';
+
+    morse = morse.replace(/\|/g,' ');
+    morse = morse.replace(/ {3,}/g,' / ');
+    morse = morse.replace(/\s*\/\s*/g,' / ');
+    const wordTokens = morse.split(' / ');
+    const decodedWords = wordTokens.map(w=>{
+      const letterTokens = w.trim().split(/\s+/).filter(Boolean);
+      return letterTokens.map(tok=>{
+        if (MORSE_TO_CHAR[tok]) return MORSE_TO_CHAR[tok];
+        const normalized = tok.replace(/\*/g,'.').replace(/_/g,'-');
+        if (MORSE_TO_CHAR[normalized]) return MORSE_TO_CHAR[normalized];
+        if (!/^[\.\-]+$/.test(normalized)) return '?';
+        return MORSE_TO_CHAR[normalized] || '?';
+      }).join('');
+    });
+    return decodedWords.join(' ');
+  }
+
+  encodeBtn.addEventListener('click',()=>{
+    try{
+      const result = encode(input.value);
+      output.textContent = result || '[empty]';
+    }catch(e){
+      showError('Encoding failed');
+    }
+  });
+
+  decodeBtn.addEventListener('click',()=>{
+    try{
+      const result = decode(input.value);
+      output.textContent = result || '[empty]';
+    }catch(e){
+      showError('Decoding failed');
+    }
+  });
+
+  clearBtn.addEventListener('click',()=>{
+    input.value = '';
+    output.textContent = '';
+    err.style.display='none';
+  });
+
+  copyOut.addEventListener('click', async ()=>{
+    try{
+      const text = output.textContent || '';
+      if (!text) { showError('Nothing to copy'); return; }
+      await navigator.clipboard.writeText(text);
+      copyOut.textContent = 'Copied';
+      setTimeout(()=>copyOut.textContent='Copy Output',1200);
+    }catch(e){
+      showError('Could not copy to clipboard');
+    }
+  });
+
+  input.addEventListener('dblclick',()=>{
+    if (!input.value.trim()){
+      input.value = "Hello, world!";
+    }
+  });
+
+
+  input.addEventListener('keydown', (ev)=>{
+    if (ev.ctrlKey && ev.key === 'Enter'){
+      ev.preventDefault();
+      if (ev.shiftKey) decodeBtn.click(); else encodeBtn.click();
+    }
+  });
+
+
+  input.value = "Type or paste your message here!";
+  output.textContent = encode(input.value);
+})();
+</script>
+</body>
+</html>
