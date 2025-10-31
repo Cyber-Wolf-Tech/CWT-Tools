@@ -10,18 +10,21 @@
   .wrap{max-width:900px;margin:0 auto;background:linear-gradient(180deg,var(--card),#07151f);border-radius:12px;padding:22px;box-shadow:0 8px 30px rgba(2,6,23,0.6)}
   h1{margin:0 0 8px;font-weight:600;font-size:20px}
   p.lead{color:var(--muted);margin:0 0 18px}
-  .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  /* grid layout */
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start}
+  @media(max-width:760px){.grid{grid-template-columns:1fr}}
   label{display:block;font-size:13px;margin-bottom:6px;color:var(--muted)}
-  textarea{width:100%;min-height:140px;padding:12px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:rgba(255,255,255,0.02);color:var(--text);resize:vertical;font-size:14px}
+  textarea{width:100%;min-height:220px;padding:12px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:rgba(255,255,255,0.02);color:var(--text);resize:vertical;font-size:14px;box-sizing:border-box}
   .controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
   button{background:var(--accent);border:0;color:#022;padding:10px 12px;border-radius:8px;cursor:pointer;font-weight:600}
   button.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted);font-weight:600}
-  .output{margin-top:16px;padding:12px;border-radius:8px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03);min-height:72px}
+  .output{margin-top:16px;padding:12px;border-radius:8px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03);min-height:220px;box-sizing:border-box;overflow:auto;white-space:pre-wrap}
   .small{font-size:13px;color:var(--muted)}
   footer{margin-top:18px;color:var(--muted);font-size:13px;text-align:right}
-  @media(max-width:760px){.grid{grid-template-columns:1fr}}
   .kbd{display:inline-block;padding:4px 8px;border-radius:6px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.02);font-family:monospace;font-size:13px}
   .error{color:#ff9b9b;margin-top:8px}
+  /* ensure columns don't collapse and provide spacing so they won't overlap */
+  .grid > div{min-height:260px}
 </style>
 </head>
 <body>
@@ -172,14 +175,12 @@
     }
   });
 
-
   input.addEventListener('keydown', (ev)=>{
     if (ev.ctrlKey && ev.key === 'Enter'){
       ev.preventDefault();
       if (ev.shiftKey) decodeBtn.click(); else encodeBtn.click();
     }
   });
-
 
   input.value = "Type or paste your message here!";
   output.textContent = encode(input.value);
